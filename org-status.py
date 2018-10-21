@@ -41,19 +41,23 @@ if __name__ == '__main__':
   token = GitHubToken(environ['GITHUB_TOKEN'])
 
   parser = ArgumentParser()
-  parser.add_argument('org')  
+  parser.add_argument('org')
+  parser.add_argument('--no-color', action='store_true')
+
   args = parser.parse_args()
   org = args.org
 
+  color = (lambda l, *_: l) if args.no_color else colored
   total, r_pass, r_fail, r_unknown = 0, 0, 0, 0
+
   for repo, status in get_org_repo_status(token, org):
     total += 1
 
     if status == passing:
-      status = colored(status, 'green')
+      status = color(status, 'green')
       r_pass += 1
     elif status == failing:
-      status = colored(status, 'red')
+      status = color(status, 'red')
       r_fail += 1
     elif status == unknown:
       r_unknown += 1
