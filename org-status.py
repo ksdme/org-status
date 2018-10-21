@@ -7,6 +7,7 @@ from termcolor import colored
 from IGitt.GitHub.GitHub import GitHub, GitHubToken
 from IGitt.GitHub.GitHubOrganization import GitHubOrganization
 
+error = 'error'
 unknown = 'unknown'
 failing = 'failing'
 passing = 'passing'
@@ -14,7 +15,7 @@ passing = 'passing'
 def process_travis_result(html):
   html = html.lower()
 
-  for status in [passing, failing, unknown]:
+  for status in [passing, failing, unknown, error]:
     if status in html:
       return status    
 
@@ -48,7 +49,7 @@ if __name__ == '__main__':
   org = args.org
 
   color = (lambda l, *_: l) if args.no_color else colored
-  total, r_pass, r_fail, r_unknown = 0, 0, 0, 0
+  total, r_pass, r_fail, r_unknown, r_error = 0, 0, 0, 0, 0
 
   for repo, status in get_org_repo_status(token, org):
     total += 1
@@ -59,11 +60,15 @@ if __name__ == '__main__':
     elif status == failing:
       status = color(status, 'red')
       r_fail += 1
+    elif status == error:
+      status = color(status, 'magenta')
+      r_error += 1
     elif status == unknown:
       r_unknown += 1
       continue
 
     print('{repo}: {status}'.format(repo=repo, status=status))
 
-  print('{} Passing, {} Failing, {} Unknown of {} Repositories'.format(
-    r_pass, r_fail, r_unknown, total))
+  print('{} Passing, {} Failing, {} Error, {} Unknown'
+        'of {} Repositories'.format(
+            r_pass, r_fail, r_error, r_unknown, total))
