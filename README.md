@@ -1,36 +1,28 @@
 ## How it works?
-`travis-org-status` uses repo SVG labels to determine status of the repo build.
+`org-status` uses SVG labels from CI/CD systems to determine build status of all repos under an organization.
+
+- Supported Hosts
+  - Github
+  - Gitlab
+
+- Supported CI Services
+  - Travis
+  - Gitlab CI
 
 ## Usage
 
-```
-GITHUB_TOKEN=[GH_TOKEN] python org-status.py [ORG-NAME]
-```
-
-Organization has to be in scope of the access token. If it is a public org then `repo` scope should be sufficient. Use `--no-color` for no colored mode.
-
-## Result
 ```shell
-https://github.com/coala/coala-vs-code: passing
-https://github.com/coala/coala-quickstart: failing
-https://github.com/coala/rultor-python: failing
-https://github.com/coala/devops: passing
-https://github.com/coala/bear-docs: failing
-https://github.com/coala/docker-coala-base: None
-https://github.com/coala/projects: failing
-https://github.com/coala/coala-html: passing
-https://github.com/coala/coala-ls: failing
-https://github.com/coala/community: passing
-https://github.com/coala/coala-bears: failing
-https://github.com/coala/gh-board: failing
-https://github.com/coala/git-task-list: passing
-https://github.com/coala/coala-eclipse: failing
-https://github.com/coala/PyPrint: passing
-https://github.com/coala/coala: failing
-https://github.com/coala/coala-emacs: failing
-https://github.com/coala/documentation: failing
-https://github.com/coala/corobo: passing
-https://github.com/coala/gci-leaders: failing
-https://github.com/coala/landing-frontend: passing
-8 Passing, 12 Failing, 33 Unknown of 54 Repositories
+usage: __main__.py [-h] [--threads THREADS] [--no-color] [--verbose]
+                   orgs [orgs ...]
+
+positional arguments:
+  orgs               host:org
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --threads THREADS
+  --no-color
+  --verbose, -v
 ```
+
+Git host specific tokens are required to be available as environment variables. Org names should be in the form of `host:org`, if no host is passed then it checks the repo against all available hosts, `:` is optional in case the host is omitted. Organization has to be in scope of access tokens. Use `--no-color` for no colored mode.
