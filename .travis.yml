@@ -1,0 +1,19 @@
+language: python
+python: 3.6
+
+cache:
+  pip: true
+
+stages:
+  - coala
+
+jobs:
+  include:
+    - stage: coala
+      install: pip install coala-bears
+      script: coala --non-interactive -V
+
+notifications:
+  email: false
+  webhooks: https://www.travisbuddy.com/
+  on_success: never

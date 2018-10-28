@@ -1,0 +1,23 @@
+[all]
+files = **.py
+ignore = .git/**, **/__pycache__/**
+max_line_length = 80
+use_spaces = True
+preferred_quotation = '
+
+[all.whitespace]
+use_spaces = True
+bears = SpaceConsistencyBear
+default_actions = *: ApplyPatchAction
+
+[all.python]
+tags = dev
+files = **.py
+language = Python
+
+[all.python.default]
+bears = PEP8Bear, PycodestyleBear, PyFlakesBear, QuotesBear
+default_actions = *: ApplyPatchAction
+
+[all.linelength]
+bears = LineLengthBear
