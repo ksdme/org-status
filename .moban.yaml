@@ -1,0 +1,41 @@
+overrides: coala.yaml
+
+name: org-status
+version: 0.1.0
+build_version: 0.1.1.dev
+package_module: org_status
+url: https://github.com/ksdme/org-status/
+license: MIT
+docs_dir: false
+
+keywords:
+  - github
+  - gitlab-ci
+  - travis-ci
+  - ci
+
+maintainers:
+  - Kilari Teja
+maintainer_emails:
+  - kilariteja9@gmail.com
+
+dependencies:
+  - git+https://gitlab.com/gitmate/open-source/IGitt.git#egg=IGitt
+  - requests
+  - termcolor
+
+entry_points:
+  console_scripts:
+    - org-status = org_status:main
+
+configuration:
+  template_dir:
+    - ../coala-mobans/templates/
+    - ../coala-mobans/assets/
+  configuration: .moban.yaml
+  configuration_dir: ../coala-mobans/
+targets:
+  - .gitignore: coala-gitignore.jj2
+  - setup.py: coala-setup.py.jj2
+  - setup.cfg: setup.cfg.jj2
+  - requirements.txt: requirements.txt.jj2
