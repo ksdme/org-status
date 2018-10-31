@@ -21,7 +21,7 @@ DESCRIPTION = (
 )
 DEPENDENCY_LINKS = []
 
-KEYWORDS=[
+KEYWORDS = [
     'github',
     'gitlab-ci',
     'travis-ci',
