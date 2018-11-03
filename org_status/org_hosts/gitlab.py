@@ -23,7 +23,9 @@ class GitLabOrg(OrgHost):
 
         # reliable enough?
         repo_name = '/'.join(repo.web_url.split('/')[4:])
-        repo_status = self._status_provider.get_status(repo_name, branch=branch)
+        repo_status = self._status_provider.get_status(repo_name,
+                                                       self.HostName,
+                                                       branch=branch)
 
         return RepoStatus(repo.web_url, repo_status)
 
