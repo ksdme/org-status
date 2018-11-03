@@ -26,10 +26,10 @@ class StatusProvider:
 
         self._group = group
         self._group_url = self.BadgeTemplate.format(
-          group=group, repo='{repo}', branch='{branch}')
+          group=group, repo='{repo}', branch='{branch}', host='{host}')
 
-    def get_badge_url(self, repo, branch='master'):
-        return self._group_url.format(repo=repo, branch=branch)
+    def get_badge_url(self, repo, host, branch='master'):
+        return self._group_url.format(repo=repo, branch=branch, host=host)
 
     def status_from_badge_svg(self, svg):
         svg = svg.lower()

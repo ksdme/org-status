@@ -7,8 +7,10 @@ class GitLabCIStatus(StatusProvider):
     BadgeTemplate = ('https://gitlab.com/{group}'
                      '/{repo}/badges/{branch}/pipeline.svg')
 
-    def get_status(self, repo, branch):
-        badge_result = requests.get(self.get_badge_url(repo, branch=branch))
+    def get_status(self, repo, host, branch):
+        badge_result = requests.get(self.get_badge_url(repo,
+                                                       host,
+                                                       branch=branch))
 
         if badge_result.status_code == 404:
             return Status.UNKNOWN

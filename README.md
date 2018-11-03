@@ -8,6 +8,7 @@
 - Supported CI Services
   - Travis
   - Gitlab CI
+  - AppVeyor
 
 ## Usage
 

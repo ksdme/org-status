@@ -3,9 +3,9 @@ import requests
 from org_status.status_providers import StatusProvider, Status
 
 
-class TravisBuildStatus(StatusProvider):
-    BadgeTemplate = ('https://api.travis-ci.org/{group}'
-                     '/{repo}.svg?branch={branch}')
+class AppVeyorStatus(StatusProvider):
+    BadgeTemplate = ('https://ci.appveyor.com/api/projects/status/{host}/'
+                     '{group}/{repo}?branch={branch}&svg=true')
 
     def get_status(self, repo, host, branch='master'):
         badge_result = requests.get(self.get_badge_url(repo,
