@@ -22,6 +22,10 @@ class OrgHost:
     def process_repository(self, repo):
         raise NotImplementedError()
 
+    @classmethod
+    def get_host_status(cls):
+        raise NotImplementedError()
+
     @property
     def repositories(self):
         raise NotImplementedError()

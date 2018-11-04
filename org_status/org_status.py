@@ -81,8 +81,20 @@ def main():
     parser = get_argument_parser()
     args = parser.parse_args()
 
+    styled = (lambda l, *_: l) if args.no_color else colored
+    verbose = print if args.verbose else (lambda *_: None)
+
     for Host, org in generate_fetch_jobs(args.orgs):
         token = None
+
+        try:
+            if not Host.get_host_status():
+                print(styled(f'{Host.HostName} is currently down', 'red'))
+                continue
+            else:
+                verbose(f'{Host.HostName} is up')
+        except NotImplementedError:
+            verbose(f'{Host.HostName} does not support checking host status')
 
         if (args.verbose):
             print(f'processing org {Host.HostName}:{org}')
@@ -94,7 +106,6 @@ def main():
 
             if clean_exp.endswith('TOKEN'):
                 token_type = clean_exp.replace('_TOKEN', '').title()
-                styled = (lambda l, *_: l) if args.no_color else colored
 
                 text = (f'Lookup requires an access token from {token_type} '
                         f'with permissions to this organization. Please set '
