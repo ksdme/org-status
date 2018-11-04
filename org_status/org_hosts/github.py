@@ -1,3 +1,6 @@
+import json
+
+import requests
 from IGitt.GitHub.GitHub import GitHubToken
 from IGitt.GitHub.GitHubOrganization import GitHubOrganization
 
@@ -21,6 +24,12 @@ class GitHubOrg(OrgHost):
         self._status_provider = []
         for i in enumerate(self.StatusProvider):
             self._status_provider.append(self.StatusProvider[i[0]](self._group))
+
+    @classmethod
+    def get_host_status(cls):
+        status = requests.get('https://status.github.com/api/status.json')
+        status = json.loads(status.text)
+        return status['status'] == 'good'
 
     def process_repository(self, repo, branch='master'):
         self.print_status(repo.web_url)
