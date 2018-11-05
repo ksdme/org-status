@@ -1,3 +1,6 @@
+import json
+
+import requests
 from IGitt.GitLab.GitLab import GitLabPrivateToken
 from IGitt.GitLab.GitLabOrganization import GitLabOrganization
 
@@ -9,6 +12,9 @@ class GitLabOrg(OrgHost):
     HostName = 'gitlab'
     StatusProvider = GitLabCIStatus
 
+    HOST_STATUS_URL = ('https://api.status.io/1.0/status'
+                       '/5b36dc6502d06804c08349f7')
+
     def __init__(self, token, group, **kargs):
         super().__init__(**kargs)
 
@@ -17,6 +23,12 @@ class GitLabOrg(OrgHost):
         self._org = GitLabOrganization(self._token, self._group)
 
         self._status_provider = self.StatusProvider(self._group)
+
+    @classmethod
+    def get_host_status(cls):
+        status = requests.get(cls.HOST_STATUS_URL)
+        status = json.loads(status.text)
+        return status['result']['status_overall']['status'] == 'Operational'
 
     def process_repository(self, repo, branch='master'):
         self.print_status(repo.web_url)

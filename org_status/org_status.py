@@ -69,10 +69,12 @@ def present_status(statuses, no_color):
 
 def get_argument_parser():
     parser = ArgumentParser()
-    parser.add_argument('orgs', nargs='+', help='host:org')
+    parser.add_argument('orgs', nargs='*', help='host:org')
     parser.add_argument('--threads', type=int, default=2)
     parser.add_argument('--no-color', action='store_true')
     parser.add_argument('--verbose', '-v', action='store_true')
+    parser.add_argument('--hosts-only', '-o', action='store_true')
+    parser.add_argument('--skip-host-checks', action='store_true')
 
     return parser
 
@@ -84,17 +86,33 @@ def main():
     styled = (lambda l, *_: l) if args.no_color else colored
     verbose = print if args.verbose else (lambda *_: None)
 
+    hosts_only_print = print if args.hosts_only else verbose
+
+    if len(args.orgs) == 0 and args.hosts_only:
+        args.orgs = ['coala']
+    elif len(args.orgs) == 0:
+        print(styled('no organizations to check', 'red'))
+        return
+
     for Host, org in generate_fetch_jobs(args.orgs):
         token = None
 
-        try:
-            if not Host.get_host_status():
-                print(styled(f'{Host.HostName} is currently down', 'red'))
-                continue
-            else:
-                verbose(f'{Host.HostName} is up')
-        except NotImplementedError:
-            verbose(f'{Host.HostName} does not support checking host status')
+        if not args.skip_host_checks:
+            try:
+                if not Host.get_host_status():
+                    print(styled(f'{Host.HostName} is currently down', 'red'))
+                    continue
+                else:
+                    hosts_only_print(f'{Host.HostName} is up')
+            except NotImplementedError:
+                verbose(
+                    f'{Host.HostName} does not support checking host status')
+
+        if args.hosts_only and args.skip_host_checks:
+            verbose('nothing to do')
+            return
+        elif args.hosts_only:
+            continue
 
         if (args.verbose):
             print(f'processing org {Host.HostName}:{org}')
