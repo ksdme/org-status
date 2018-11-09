@@ -1,4 +1,4 @@
-from os import environ
+from os import environ, path
 from multiprocessing.dummy import Pool
 from argparse import ArgumentParser
 
@@ -6,6 +6,7 @@ from termcolor import colored
 
 from org_status.status_providers import Status
 from org_status.org_hosts import get_all_supported_hosts
+from org_status.encoders import get_all_supported_encoders
 
 
 def get_host_token(host_name):
@@ -75,8 +76,39 @@ def get_argument_parser():
     parser.add_argument('--verbose', '-v', action='store_true')
     parser.add_argument('--hosts-only', '-o', action='store_true')
     parser.add_argument('--skip-host-checks', action='store_true')
+    parser.add_argument('--export-repos', type=str)
+    parser.add_argument('--format', type=str, default='gitman')
 
     return parser
+
+
+def encode_repo_list(repo_data, encoder_name, styled):
+    encoders = get_all_supported_encoders()
+    encoded_repo_list = None
+
+    for encoder in encoders:
+        if encoder.NAME == encoder_name:
+            try:
+                encoded_repo_list = encoder().convert_repo_list_to_format(
+                    repo_data)
+            except NotImplementedError:
+                print(styled(
+                        f'{encoder_name} does not support exporting results',
+                        'red'))
+        else:
+            print(styled(f'unknown export format {encoder_name}', 'red'))
+
+    return encoded_repo_list
+
+
+def write_data_to_file(encoded_data, filename, styled, verbose):
+    if encoded_data is not None:
+        try:
+            with open(filename, 'w') as file:
+                file.write(encoded_data)
+                verbose(f'exported repo list as {filename}')
+        except FileNotFoundError:
+            print(styled(f'unable to find file {filename}', 'red'))
 
 
 def main():
@@ -93,6 +125,8 @@ def main():
     elif len(args.orgs) == 0:
         print(styled('no organizations to check', 'red'))
         return
+
+    all_repositories = []
 
     for Host, org in generate_fetch_jobs(args.orgs):
         token = None
@@ -136,5 +170,18 @@ def main():
             raise exp
 
         org_host = Host(token, org, verbose=args.verbose)
+
+        if args.export_repos:
+            all_repositories += org_host.repositories
+            continue
+
         org_status = aggregate_org_status(org_host, threads=args.threads)
         present_status(org_status, args.no_color)
+
+    export_data = encode_repo_list(all_repositories,
+                                   args.format,
+                                   styled)
+    export_file = path.abspath(args.export_repos)
+
+    if export_data is not None:
+        write_data_to_file(export_data, export_file, styled, verbose)
