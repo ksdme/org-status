@@ -198,10 +198,11 @@ def main():
         org_status = aggregate_org_status(org_host, threads=args.threads)
         present_status(org_status, args.no_color)
 
-    export_data = encode_repo_list(all_repositories,
-                                   args.format,
-                                   styled)
-    export_file = path.abspath(args.export_repos)
+    if args.export_repos:
+        export_data = encode_repo_list(all_repositories, args.format, styled)
+        export_file = path.abspath(args.export_repos)
 
-    if export_data is not None:
-        write_data_to_file(export_data, export_file, styled, verbose)
+        if len(all_repositories) > 0:
+            write_data_to_file(export_data, export_file, styled, verbose)
+        else:
+            verbose(f'exporting failed {export_file}')
