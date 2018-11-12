@@ -4,6 +4,7 @@ from org_status.status_providers import StatusProvider, Status
 
 
 class AppVeyorStatus(StatusProvider):
+    NAME = 'appveyor'
     BadgeTemplate = ('https://ci.appveyor.com/api/projects/status/{host}/'
                      '{group}/{repo}?branch={branch}&svg=true')
 

@@ -4,6 +4,7 @@ from org_status.status_providers import StatusProvider, Status
 
 
 class GitLabCIStatus(StatusProvider):
+    NAME = 'gitlabci'
     BadgeTemplate = ('https://gitlab.com/{group}'
                      '/{repo}/badges/{branch}/pipeline.svg')
 

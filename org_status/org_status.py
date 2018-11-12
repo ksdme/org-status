@@ -4,13 +4,21 @@ from argparse import ArgumentParser
 
 from termcolor import colored
 
-from org_status.status_providers import Status
+from org_status.status_providers import Status, get_supported_status_providers
 from org_status.org_hosts import get_all_supported_hosts
 from org_status.encoders import get_all_supported_encoders
 
 
 def get_host_token(host_name):
     return environ['{}_TOKEN'.format(host_name.upper())]
+
+
+def get_status_provider_statuses():
+    for provider in get_supported_status_providers():
+        try:
+            yield (provider, provider.get_status_provider_status())
+        except NotImplementedError:
+            yield (provider, None)
 
 
 def generate_fetch_jobs(org_strings):
@@ -78,6 +86,7 @@ def get_argument_parser():
     parser.add_argument('--skip-host-checks', action='store_true')
     parser.add_argument('--export-repos', type=str)
     parser.add_argument('--format', type=str, default='gitman')
+    parser.add_argument('--check-providers-only', action='store_true')
 
     return parser
 
@@ -119,6 +128,17 @@ def main():
     verbose = print if args.verbose else (lambda *_: None)
 
     hosts_only_print = print if args.hosts_only else verbose
+
+    if args.check_providers_only:
+        for provider, status in get_status_provider_statuses():
+            if provider is not None:
+                print(styled(f'{provider.NAME}: {str(status).lower()}',
+                             'green' if status else 'red'))
+            else:
+                print(styled(
+                    f'{provider.NAME} does not support status check', 'red'))
+
+        return
 
     if len(args.orgs) == 0 and args.hosts_only:
         args.orgs = ['coala']

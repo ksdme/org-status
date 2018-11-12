@@ -18,6 +18,7 @@ StatusVariants = {
 
 
 class StatusProvider:
+    NAME = None
     BadgeTemplate = None
 
     def __init__(self, group):
@@ -38,3 +39,19 @@ class StatusProvider:
             for variant in variants:
                 if variant in svg:
                     return status
+
+    @classmethod
+    def get_status_provider_status(self):
+        raise NotImplementedError()
+
+
+def get_supported_status_providers():
+    from org_status.status_providers.travis import TravisBuildStatus
+    from org_status.status_providers.gitlab_ci import GitLabCIStatus
+    from org_status.status_providers.appveyor import AppVeyorStatus
+
+    return (
+        TravisBuildStatus,
+        GitLabCIStatus,
+        AppVeyorStatus,
+    )
